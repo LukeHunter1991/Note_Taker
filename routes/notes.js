@@ -32,18 +32,22 @@ notes.post('/', async (req, res) => {
         }
         // Add new note into existing data array.
         currentData.push(newNote);
-
         // Convert updated array to be stored back into db.
         const noteJson = JSON.stringify(currentData);
 
         // Write updated array back to db file.
-        const data = await fs.writeFile('./db/db.json', noteJson, (err) => {
+        await fs.writeFile('./db/db.json', noteJson, (err) => {
             err ? console.error(err) : console.log('Succesfully updated file')
         });
-        res.json('Note added to log');
+
+        const data = await fs.readFile('./db/db.json', (err) =>
+            err ? console.error(err) : console.log('file read succesfully'))
+
+        res.send(data);
 
     } else {
-        res.error('Failed to add note to log');
+        // If post request failed, send error response.
+        res.send('Failed to add note to log');
     }
 });
 
