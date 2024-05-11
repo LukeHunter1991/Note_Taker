@@ -47,4 +47,14 @@ notes.post('/', async (req, res) => {
     }
 });
 
+// Get route for retrieving notes from db.
+notes.get('/', async (req, res) => {
+    let notes = await fs.readFile('./db/db.json', (err) =>
+        err ? console.error(err) : console.log('file read succesfully'))
+
+    res.send(notes);
+});
+
+
+
 module.exports = notes;
