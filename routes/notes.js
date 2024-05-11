@@ -22,7 +22,7 @@ notes.post('/', async (req, res) => {
 
         // Try will fail if no data already in db.json
         try {
-            // Read data from db.json into arraay once parsed from JSON.
+            // Read data from db.json into array once parsed from JSON.
             currentData = JSON.parse(await fs.readFile('./db/db.json', 'utf-8', (err) => {
                 err ? console.error(err) : console.log('file read succesfully')
             })
@@ -52,13 +52,48 @@ notes.post('/', async (req, res) => {
 });
 
 // Get route for retrieving notes from db.
-notes.get('/', async (req, res) => {
+notes.get('/', async (_req, res) => {
+    // Read notes for db file
     let notes = await fs.readFile('./db/db.json', (err) =>
         err ? console.error(err) : console.log('file read succesfully'))
-
+    // Return list of notes
     res.send(notes);
 });
 
+notes.delete('*', async (req, res) => {
+    const deleteId = req.params[0].replace('/', '')
+    // Declare empty array for scoping
+    let currentData = [];
+    // Try will fail if no data already in db.json
+    try {
+        // Read data from db.json into array once parsed from JSON.
+        currentData = JSON.parse(await fs.readFile('./db/db.json', 'utf-8', (err) => {
+            err ? console.error(err) : console.log('file read succesfully')
+        })
+        );
+    } catch (error) {
+        console.error(error);
+    }
 
+    currentData.forEach(note => {
+        if (note.id == deleteId) {
+            currentData.splice(currentData.indexOf(note), 1);
+        }
+    });
+    // Convert updated array back to JSON
+    const noteJson = JSON.stringify(currentData);
+
+    // Write updated array back to db file.
+    await fs.writeFile('./db/db.json', noteJson, (err) => {
+        err ? console.error(err) : console.log('Succesfully updated file')
+    });
+
+    const data = await fs.readFile('./db/db.json', (err) =>
+        err ? console.error(err) : console.log('file read succesfully'))
+
+    res.send(data);
+
+
+})
 
 module.exports = notes;
