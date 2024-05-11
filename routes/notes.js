@@ -60,9 +60,11 @@ notes.get('/', async (_req, res) => {
     res.send(notes);
 });
 
-notes.delete('*', async (req, res) => {
-    const deleteId = req.params[0].replace('/', '')
+notes.delete('/:id', async (req, res) => {
+    // Get id of note to delete
+    const deleteId = req.params.id;
     // Declare empty array for scoping
+    console.log(deleteId);
     let currentData = [];
     // Try will fail if no data already in db.json
     try {
